@@ -19,6 +19,10 @@ resource "docker_container" "grafana_container" {
   name  = "grafana_container-${count.index}"
   image = docker_image.grafana_image.latest
   count = 2
+  ports {
+    internal = var.int_port
+    external = var.ext_port[count.index]
+  }
 }
 
 # output "public_ip" {
@@ -26,5 +30,5 @@ resource "docker_container" "grafana_container" {
 # }
 
 output "public_ip" {
-    value =  [for x in docker_container.grafana_container : "${x.name} - ${x.ip_address}"]
+  value = [for x in docker_container.grafana_container : "${x.name} - ${x.ip_address}:${x.ports[0].external}"]
 }
